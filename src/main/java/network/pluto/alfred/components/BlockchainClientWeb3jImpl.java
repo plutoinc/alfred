@@ -62,7 +62,6 @@ public class BlockchainClientWeb3jImpl implements BlockchainClient {
             ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
             String fileContentString = objectMapper.writeValueAsString(walletFile);
 
-            user.setWalletAddress(walletFile.getAddress());
             byte[] fileContentBytes = fileContentString.getBytes(StandardCharsets.UTF_8);
 
             InputStream walletContentInputStream = new ByteArrayInputStream(fileContentBytes);

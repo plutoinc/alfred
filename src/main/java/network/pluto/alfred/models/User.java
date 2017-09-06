@@ -2,13 +2,23 @@ package network.pluto.alfred.models;
 
 import network.pluto.alfred.validates.IdPwValidationGroup;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+@Entity
+@Table(name = "PLUTO_USER")
 public class User implements Serializable {
-    @NotNull(groups = {IdPwValidationGroup.class}) private Long id;
-    @NotNull(groups = {IdPwValidationGroup.class}) private String password;
-    private String walletAddress;
+    @Id
+    @GeneratedValue
+    @NotNull(groups = {IdPwValidationGroup.class})
+    private Long id;
+
+    @NotNull(groups = {IdPwValidationGroup.class})
+    private String password;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Wallet wallet;
 
     public Long getId() {
         return id;
@@ -26,11 +36,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getWalletAddress() {
-        return walletAddress;
+    public Wallet getWallet() {
+        return wallet;
     }
 
-    public void setWalletAddress(String walletAddress) {
-        this.walletAddress = walletAddress;
+    public void setWallet(Wallet wallet) {
+        this.wallet = wallet;
     }
 }
