@@ -1,5 +1,7 @@
 package network.pluto.alfred.services;
 
+import network.pluto.alfred.models.User;
+
 public interface WalletService {
-    public String createWallet(Long userId, String password);
+    public String createWallet(User user);
 }
