@@ -1,9 +1,9 @@
 package network.pluto.alfred.services;
 
 import network.pluto.alfred.components.BlockchainClient;
-import network.pluto.alfred.models.User;
-import network.pluto.alfred.models.Wallet;
-import network.pluto.alfred.repositories.WalletRepository;
+import network.pluto.bibliotheca.models.Member;
+import network.pluto.bibliotheca.models.Wallet;
+import network.pluto.bibliotheca.repositories.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +19,13 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Wallet createWallet(User user) {
-        String walletAddress = this.blockchainClient.createWallet(user);
+    public Wallet createWallet(Member member) {
+        String walletAddress = this.blockchainClient.createWallet(member);
         if(walletAddress == null) {
             return null;
         }
 
         Wallet wallet = new Wallet();
-        wallet.setUser(user);
         wallet.setAddress(walletAddress);
 
         wallet = this.walletRepository.save(wallet);

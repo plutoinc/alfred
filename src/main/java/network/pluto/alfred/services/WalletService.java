@@ -1,8 +1,8 @@
 package network.pluto.alfred.services;
 
-import network.pluto.alfred.models.User;
-import network.pluto.alfred.models.Wallet;
+import network.pluto.bibliotheca.models.Member;
+import network.pluto.bibliotheca.models.Wallet;
 
 public interface WalletService {
-    public Wallet createWallet(User user);
+    public Wallet createWallet(Member member);
 }

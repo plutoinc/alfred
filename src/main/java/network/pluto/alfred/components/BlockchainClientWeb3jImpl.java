@@ -5,7 +5,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import network.pluto.alfred.models.User;
+import network.pluto.bibliotheca.models.Member;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +54,10 @@ public class BlockchainClientWeb3jImpl implements BlockchainClient {
     }
 
     @Override
-    public String createWallet(User user) {
+    public String createWallet(Member member) {
         try {
             ECKeyPair ecKeyPair = Keys.createEcKeyPair();
-            WalletFile walletFile = Wallet.createStandard(user.getPassword(), ecKeyPair);
+            WalletFile walletFile = Wallet.createStandard(member.getPassword(), ecKeyPair);
 
             ObjectMapper objectMapper = ObjectMapperFactory.getObjectMapper();
             String fileContentString = objectMapper.writeValueAsString(walletFile);
@@ -71,7 +71,7 @@ public class BlockchainClientWeb3jImpl implements BlockchainClient {
             objectMetadata.setContentLength(fileContentBytes.length);
 
             PutObjectRequest putObjectRequest = new PutObjectRequest(this.s3BucketName,
-                    "wallet_" + String.valueOf(user.getId()) + ".json", walletContentInputStream, objectMetadata);
+                    "wallet_" + String.valueOf(member.getMemberId()) + ".json", walletContentInputStream, objectMetadata);
 
             this.amazonS3.putObject(putObjectRequest);
 

@@ -1,9 +1,9 @@
 package network.pluto.alfred.services;
 
 import network.pluto.alfred.components.BlockchainClient;
-import network.pluto.alfred.models.User;
-import network.pluto.alfred.models.Wallet;
-import network.pluto.alfred.repositories.WalletRepository;
+import network.pluto.bibliotheca.models.Member;
+import network.pluto.bibliotheca.models.Wallet;
+import network.pluto.bibliotheca.repositories.WalletRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +34,13 @@ public class WalletServiceTest {
         given(walletRepository.save((Wallet)anyObject())).willReturn(wallet);
         given(blockchainClient.createWallet(anyObject())).willReturn("mywalletaddress");
 
-        User user = new User();
-        user.setId(1L);
-        user.setPassword("asdf");
+        Member member = new Member();
+        member.setMemberId(1L);
+        member.setPassword("asdf");
 
-        Wallet result = this.walletService.createWallet(user);
+        Wallet result = this.walletService.createWallet(member);
         System.out.println(result);
 
-        assertThat(this.walletService.createWallet(user)).hasFieldOrPropertyWithValue("address", "mywalletaddress");
+        assertThat(this.walletService.createWallet(member)).hasFieldOrPropertyWithValue("address", "mywalletaddress");
     }
 }

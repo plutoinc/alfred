@@ -1,24 +1,33 @@
 package network.pluto.alfred.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import network.pluto.alfred.models.User;
-import network.pluto.alfred.models.Wallet;
-import network.pluto.alfred.services.UserService;
+import network.pluto.alfred.services.MemberService;
 import network.pluto.alfred.services.WalletService;
+import network.pluto.bibliotheca.configurations.BibliothecaConfiguration;
+import network.pluto.bibliotheca.models.Member;
+import network.pluto.bibliotheca.models.Wallet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Matchers.anyString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(WalletController.class)
@@ -28,7 +37,7 @@ public class WalletControllerTest {
     private WalletService walletService;
 
     @MockBean
-    private UserService userService;
+    private MemberService memberService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,51 +47,46 @@ public class WalletControllerTest {
 
     @Test
     public void testCreateWallet_NormalWalletCreation_ShouldReturnNormalResult() throws Exception {
-        User user = new User();
-        user.setId(1L);
-        user.setPassword("asdf");
+        Member member = new Member();
+        member.setMemberId(1L);
+        member.setPassword("asdf");
 
         Wallet result = new Wallet();
-        result.setId(1L);
+        result.setWalletId(1L);
         result.setAddress("mynewwalletaddr");
-        result.setUser(user);
 
-        given(this.userService.getUserById(anyLong())).willReturn(user);
+        given(this.memberService.getMemberByIdAndPassword(anyLong(), anyString())).willReturn(member);
         given(this.walletService.createWallet(anyObject())).willReturn(result);
 
         this.mockMvc.perform(post("/wallet")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(this.objectMapper.writeValueAsString(user)))
+                .content(this.objectMapper.writeValueAsString(member)))
                 .andExpect(status().isCreated())
                 .andExpect(
                         content().json(
-                                "{\"id\":1,\"user\":{\"id\":1,\"password\":\"asdf\",\"wallet\":null},\"address\":\"mynewwalletaddr\",\"createDate\":null,\"updateDate\":null}"));
+                                "{\"walletId\":1,\"address\":\"mynewwalletaddr\",\"createDate\":null,\"updateDate\":null}"));
     }
 
     @Test
     public void testCreateWallet_InvalidJsonRequestBody_ShouldReturnError() throws Exception {
-        User user = new User();
-        user.setId(1L);
-        user.setPassword("asdf");
+        Member memberWithoutPassword = new Member();
+        memberWithoutPassword.setMemberId(1L);
 
-        User userWithoutPassword = new User();
-        userWithoutPassword.setId(1L);
-
-        given(this.userService.getUserById(anyLong())).willReturn(user);
+        given(this.memberService.getMemberByIdAndPassword(anyLong(), anyString())).willReturn(null);
 
         this.mockMvc.perform(post("/wallet")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(this.objectMapper.writeValueAsString(userWithoutPassword)))
+                .content(this.objectMapper.writeValueAsString(memberWithoutPassword)))
                 .andExpect(status().isBadRequest());
 
-        User userWithoutId = new User();
-        userWithoutId.setPassword("asdf");
+        Member memberWithoutId = new Member();
+        memberWithoutId.setPassword("asdf");
 
-        given(this.userService.getUserById(anyLong())).willReturn(null);
+        given(this.memberService.getMemberByIdAndPassword(anyLong(), anyString())).willReturn(null);
 
         this.mockMvc.perform(post("/wallet")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(this.objectMapper.writeValueAsString(userWithoutId)))
+                .content(this.objectMapper.writeValueAsString(memberWithoutId)))
                 .andExpect(status().isBadRequest());
     }
 }
