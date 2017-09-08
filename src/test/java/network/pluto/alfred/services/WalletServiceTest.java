@@ -3,6 +3,7 @@ package network.pluto.alfred.services;
 import network.pluto.alfred.components.BlockchainClient;
 import network.pluto.bibliotheca.models.Member;
 import network.pluto.bibliotheca.models.Wallet;
+import network.pluto.bibliotheca.repositories.MemberRepository;
 import network.pluto.bibliotheca.repositories.WalletRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,9 @@ public class WalletServiceTest {
 
     @MockBean
     WalletRepository walletRepository;
+
+    @MockBean
+    MemberRepository memberRepository;
 
     @Autowired
     WalletService walletService;
