@@ -43,11 +43,19 @@ dependencies {
         exclude module: 'spring-boot-starter-tomcat'
     }
     compile('org.springframework.boot:spring-boot-starter-jetty')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+
     compile('org.web3j:core:2.3.0')
     compile('io.reactivex.rxjava2:rxjava:2.1.3')
+    compile('com.google.guava:guava:23.0')
+
+    compile project(':bibliotheca')
+
+    compileOnly('org.projectlombok:lombok')
 
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('org.postgresql:postgresql')
+    runtime('com.h2database:h2')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 

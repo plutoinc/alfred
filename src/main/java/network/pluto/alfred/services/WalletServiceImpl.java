@@ -1,44 +1,35 @@
 package network.pluto.alfred.services;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import network.pluto.alfred.components.BlockchainClient;
-import org.apache.http.entity.ContentType;
+import network.pluto.bibliotheca.models.Member;
+import network.pluto.bibliotheca.models.Wallet;
+import network.pluto.bibliotheca.repositories.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 @Service
 public class WalletServiceImpl implements WalletService {
-    // TODO : load bucket name from configuration
-    private static final String S3_BUCKET_NAME = "pluto-dev";
-
+    private final WalletRepository walletRepository;
     private final BlockchainClient blockchainClient;
-    private final AmazonS3 amazonS3;
 
     @Autowired
-    public WalletServiceImpl(BlockchainClient blockchainClient, AmazonS3 amazonS3) {
+    public WalletServiceImpl(WalletRepository walletRepository, BlockchainClient blockchainClient) {
+        this.walletRepository = walletRepository;
         this.blockchainClient = blockchainClient;
-        this.amazonS3 = amazonS3;
     }
 
     @Override
-    public String createWallet(Long userId, String password) {
-        byte[] walletContentBytes = this.blockchainClient.createWallet(password);
-        InputStream walletContentInputStream = new ByteArrayInputStream(walletContentBytes);
+    public Wallet createWallet(Member member) {
+        String walletAddress = this.blockchainClient.createWallet(member);
+        if(walletAddress == null) {
+            return null;
+        }
 
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-        objectMetadata.setContentLength(walletContentBytes.length);
+        Wallet wallet = new Wallet();
+        wallet.setAddress(walletAddress);
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(S3_BUCKET_NAME,
-                "wallet_" + String.valueOf(userId) + ".json", walletContentInputStream, objectMetadata);
+        wallet = this.walletRepository.save(wallet);
 
-        this.amazonS3.putObject(putObjectRequest);
-
-        return "Created";
+        return wallet;
     }
 }

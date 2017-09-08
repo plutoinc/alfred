@@ -1,6 +1,8 @@
 package network.pluto.alfred.components;
 
+import network.pluto.bibliotheca.models.Member;
+
 public interface BlockchainClient {
     public String getClientVersion();
-    public byte[] createWallet(String password);
+    public String createWallet(Member member);
 }
