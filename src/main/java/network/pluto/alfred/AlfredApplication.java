@@ -1,13 +1,15 @@
 package network.pluto.alfred;
 
-import network.pluto.bibliotheca.configurations.BibliothecaConfiguration;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@Import(BibliothecaConfiguration.class)
+@ComponentScan({"network.pluto.alfred", "network.pluto.bibliotheca"})
+@EnableJpaRepositories("network.pluto.bibliotheca.repositories")
+@EntityScan("network.pluto.bibliotheca.models")
 public class AlfredApplication {
 
     public static void main(String[] args) {

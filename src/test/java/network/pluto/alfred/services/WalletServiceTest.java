@@ -42,9 +42,6 @@ public class WalletServiceTest {
         member.setMemberId(1L);
         member.setPassword("asdf");
 
-        Wallet result = this.walletService.createWallet(member);
-        System.out.println(result);
-
         assertThat(this.walletService.createWallet(member)).hasFieldOrPropertyWithValue("address", "mywalletaddress");
     }
 }
