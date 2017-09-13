@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 @Configuration
 @EnableSwagger2
-public class SwaggerConfig {
+public class SwaggerConfiguration {
 
     @Bean
     public Docket api() {
@@ -34,7 +34,7 @@ public class SwaggerConfig {
                 "Alfred REST API for Absolute",
                 "1.0",
                 "Terms of Service",
-                new Contact("Hyeon Lee", "https://github.com/pluto-net/", "hyeon@pluto.network"),
+                new Contact("Pluto", "https://github.com/pluto-net/", "hyeon@pluto.network"),
                 "Apache License Version 2.0",
                 "https://www.apache.org/licenses/LICENSE-2.0",
                 new ArrayList<>()
