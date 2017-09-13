@@ -5,6 +5,7 @@ import network.pluto.alfred.services.MemberService;
 import network.pluto.alfred.services.WalletService;
 import network.pluto.bibliotheca.models.Member;
 import network.pluto.bibliotheca.models.Wallet;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(WalletController.class)
+@Ignore
 public class WalletControllerTest {
 
     @MockBean
