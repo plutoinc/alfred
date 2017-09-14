@@ -1,6 +1,9 @@
 package network.pluto.alfred.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import network.pluto.alfred.services.MemberService;
 import network.pluto.alfred.services.WalletService;
 import network.pluto.bibliotheca.models.Member;
@@ -29,6 +32,12 @@ public class WalletController {
         this.walletService = walletService;
     }
 
+    @ApiOperation(value = "Create a wallet for the given member.", response = Wallet.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successfully created a wallet."),
+            @ApiResponse(code = 400, message = "You didn't send appropriate input data."),
+            @ApiResponse(code = 500, message = "An error was occurred while creating a wallet.")
+    })
     @PostMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<Object> createWallet(@RequestBody Member member) {
 
