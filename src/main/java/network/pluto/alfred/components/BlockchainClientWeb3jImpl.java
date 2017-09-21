@@ -1,10 +1,14 @@
 package network.pluto.alfred.components;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import network.pluto.bibliotheca.models.Member;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
@@ -19,7 +23,9 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
@@ -33,15 +39,24 @@ public class BlockchainClientWeb3jImpl implements BlockchainClient {
     @Value("${pluto.aws.s3.bucket_name}")
     private String s3BucketName;
 
+    @Value("${pluto.wallet.key}")
+    private String plutoWalletKey;
+
+    @Value("${pluto.wallet.passphrase}")
+    private String plutoWalletPassphrase;
+
     private final Web3j web3j;
     private final AmazonS3 amazonS3;
+    private final Credentials credentials;
 
     @Autowired
-    public BlockchainClientWeb3jImpl(ApplicationContext applicationContext, AmazonS3 amazonS3) {
+    public BlockchainClientWeb3jImpl(ApplicationContext applicationContext, AmazonS3 amazonS3) throws IOException, CipherException {
         String gethUrl = applicationContext.getEnvironment().getProperty("pluto.geth.url");
         this.web3j = Web3j.build(new HttpService(gethUrl));
 
         this.amazonS3 = amazonS3;
+
+        this.credentials = this.getCredentials();
     }
 
     @Override
@@ -71,7 +86,7 @@ public class BlockchainClientWeb3jImpl implements BlockchainClient {
             objectMetadata.setContentLength(fileContentBytes.length);
 
             PutObjectRequest putObjectRequest = new PutObjectRequest(this.s3BucketName,
-                    "wallet_" + String.valueOf(member.getMemberId()) + ".json", walletContentInputStream, objectMetadata);
+                    walletFile.getAddress() + ".json", walletContentInputStream, objectMetadata);
 
             this.amazonS3.putObject(putObjectRequest);
 
@@ -85,5 +100,15 @@ public class BlockchainClientWeb3jImpl implements BlockchainClient {
         }
 
         return null;
+    }
+
+    private Credentials getCredentials() throws IOException, CipherException {
+        GetObjectRequest getObjectRequest = new GetObjectRequest(this.s3BucketName,
+                this.plutoWalletKey);
+        S3Object s3Object = this.amazonS3.getObject(getObjectRequest);
+        InputStream inputStream = s3Object.getObjectContent();
+        String walletString = CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8));
+
+        return WalletUtils.loadCredentials(this.plutoWalletPassphrase, walletString);
     }
 }
