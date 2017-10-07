@@ -19,13 +19,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member getMemberByIdAndPassword(Long id, String password) {
-        return this.memberRepository.findByMemberIdAndPassword(id, this.passwordEncoder.encode(password));
-    }
-
-    @Override
-    public void setWallet(Member member, Wallet wallet) {
-        member.setWallet(wallet);
-        this.memberRepository.save(member);
+    public Member getMemberById(Long id) {
+        return this.memberRepository.getOne(id);
     }
 }
