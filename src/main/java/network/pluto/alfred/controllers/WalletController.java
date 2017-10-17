@@ -48,11 +48,7 @@ public class WalletController {
                     ImmutableMap.of("message", "The member already has a wallet."));
         }
 
-        Wallet wallet = this.walletService.createWallet(currentMember);
-        if (wallet == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(wallet);
+        this.walletService.createWallet(currentMember);
+        return ResponseEntity.status(HttpStatus.CREATED).body("hello");
     }
 }

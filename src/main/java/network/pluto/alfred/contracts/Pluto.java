@@ -117,7 +117,7 @@ public final class Pluto extends Contract {
     }
 
     public Future<TransactionReceipt> createWallet(Uint256 _memberId) {
-        Function function = new Function("createWallet", Arrays.<Type>asList(_memberId), Collections.<TypeReference<?>>emptyList());
+        Function function = new Function("sendCreateWalletReq", Arrays.<Type>asList(_memberId), Collections.<TypeReference<?>>emptyList());
         return executeTransactionAsync(function);
     }
 

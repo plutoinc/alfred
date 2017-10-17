@@ -38,7 +38,7 @@ public class WalletServiceTest {
         Wallet wallet = new Wallet();
         wallet.setAddress("mywalletaddress");
         given(walletRepository.save((Wallet)anyObject())).willReturn(wallet);
-        given(blockchainClient.createWallet(anyObject())).willReturn("mywalletaddress");
+        given(blockchainClient.sendCreateWalletReq(anyObject())).willReturn("mywalletaddress");
 
         Member member = new Member();
         member.setMemberId(1L);
