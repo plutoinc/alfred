@@ -3,9 +3,11 @@ package network.pluto.alfred.transactions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 
+@NoArgsConstructor
 @Data
 public class PlutoCreateWalletTxRequest extends TxRequest {
     private long memberId;

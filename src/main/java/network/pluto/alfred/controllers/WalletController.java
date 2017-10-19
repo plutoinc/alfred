@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import network.pluto.alfred.dto.TransactionDto;
 import network.pluto.alfred.services.MemberService;
 import network.pluto.alfred.services.WalletService;
 import network.pluto.bibliotheca.models.Member;
+import network.pluto.bibliotheca.models.Transaction;
 import network.pluto.bibliotheca.models.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,7 +50,8 @@ public class WalletController {
                     ImmutableMap.of("message", "The member already has a wallet."));
         }
 
-        this.walletService.createWallet(currentMember);
-        return ResponseEntity.status(HttpStatus.CREATED).body("hello");
+        Transaction transaction = this.walletService.createWallet(currentMember);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new TransactionDto(transaction));
     }
 }
