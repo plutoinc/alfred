@@ -2,7 +2,6 @@ package network.pluto.alfred.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import network.pluto.alfred.transactions.PlutoCreateWalletTxRequest;
 import network.pluto.alfred.transactions.TransactionUtil;
 import network.pluto.alfred.transactions.TxRequest;
 import network.pluto.bibliotheca.enums.TransactionStatus;
@@ -40,7 +39,8 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setTransactionData(jsonStr);
             transaction.setTransactionStatus(TransactionStatus.TX_REQUESTED);
 
-            transaction = this.transactionRepository.save(transaction);
+            // sometimes cannot get transaction information at listener if not flush
+            transaction = this.transactionRepository.saveAndFlush(transaction);
 
             this.jmsTemplate.convertAndSend(this.txQueueName, transaction.getId());
 

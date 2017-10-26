@@ -3,10 +3,6 @@ package network.pluto.alfred.configurations;
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
@@ -19,20 +15,14 @@ import javax.jms.Session;
 @Configuration
 @EnableJms
 public class JmsConfiguration {
-    @Value("${cloud.aws.region.static}")
-    private String awsRegion;
 
-    private SQSConnectionFactory sqsConnectionFactory = new SQSConnectionFactory(
-            new ProviderConfiguration(),
-            AmazonSQSClientBuilder.standard()
-                    .withRegion(this.awsRegion)
-                    .withCredentials(new EnvironmentVariableCredentialsProvider()));
+    private SQSConnectionFactory sqsConnectionFactory = new SQSConnectionFactory(new ProviderConfiguration());
 
     @Bean
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 
-        factory.setConnectionFactory(this.sqsConnectionFactory);
+        factory.setConnectionFactory(sqsConnectionFactory);
         factory.setDestinationResolver(new DynamicDestinationResolver());
         factory.setConcurrency("3-10");
         factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
@@ -41,7 +31,7 @@ public class JmsConfiguration {
     }
 
     @Bean
-    public JmsTemplate deafulatJmsTemplate() {
-        return new JmsTemplate(this.sqsConnectionFactory);
+    public JmsTemplate defaultJmsTemplate() {
+        return new JmsTemplate(sqsConnectionFactory);
     }
 }
