@@ -16,14 +16,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @WebMvcTest(WalletController.class)
-@Ignore
 public class WalletControllerTest {
 
     @MockBean
@@ -48,8 +48,7 @@ public class WalletControllerTest {
         result.setWalletId(1L);
         result.setAddress("mynewwalletaddr");
 
-        given(this.memberService.getMemberByIdAndPassword(anyLong(), anyString())).willReturn(member);
-        given(this.walletService.createWallet(anyObject())).willReturn(result);
+        given(this.memberService.getMemberById(anyLong())).willReturn(member);
 
         this.mockMvc.perform(post("/wallet")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -65,7 +64,7 @@ public class WalletControllerTest {
         Member memberWithoutPassword = new Member();
         memberWithoutPassword.setMemberId(1L);
 
-        given(this.memberService.getMemberByIdAndPassword(anyLong(), anyString())).willReturn(null);
+        given(this.memberService.getMemberById(anyLong())).willReturn(null);
 
         this.mockMvc.perform(post("/wallet")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -75,7 +74,7 @@ public class WalletControllerTest {
         Member memberWithoutId = new Member();
         memberWithoutId.setPassword("asdf");
 
-        given(this.memberService.getMemberByIdAndPassword(anyLong(), anyString())).willReturn(null);
+        given(this.memberService.getMemberById(anyLong())).willReturn(null);
 
         this.mockMvc.perform(post("/wallet")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

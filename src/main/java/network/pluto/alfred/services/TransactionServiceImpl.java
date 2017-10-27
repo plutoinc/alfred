@@ -12,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 public class TransactionServiceImpl implements TransactionService {
+
     private final TransactionRepository transactionRepository;
     private final JmsTemplate jmsTemplate;
 
@@ -30,39 +32,30 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction sendTransaction(Member member, TxRequest txRequest) {
+    public void sendTransaction(Member member, TxRequest txRequest) {
         try {
             String jsonStr = TransactionUtil.getJSONString(txRequest);
-
-            Transaction transaction = new Transaction();
-            transaction.setMember(member);
-            transaction.setTransactionData(jsonStr);
-            transaction.setTransactionStatus(TransactionStatus.TX_REQUESTED);
-
-            // sometimes cannot get transaction information at listener if not flush
-            transaction = this.transactionRepository.saveAndFlush(transaction);
-
-            this.jmsTemplate.convertAndSend(this.txQueueName, transaction.getId());
-
-            return transaction;
+            this.jmsTemplate.convertAndSend(this.txQueueName, jsonStr);
         } catch (JsonProcessingException e) {
             log.error(e.getLocalizedMessage());
-
-            return null;
         }
     }
 
+    @Transactional
     @Override
     public void updateTransactionStatus(long txId, TransactionStatus transactionStatus) {
         Transaction transaction = this.transactionRepository.getOne(txId);
-        if (transaction != null) {
-            transaction.setTransactionStatus(transactionStatus);
-            this.transactionRepository.save(transaction);
-        }
+        transaction.setTransactionStatus(transactionStatus);
     }
 
     @Override
     public Transaction getTransaction(long transactionId) {
         return this.transactionRepository.findOne(transactionId);
+    }
+
+    @Transactional
+    @Override
+    public Transaction saveTransaction(Transaction transaction) {
+        return this.transactionRepository.save(transaction);
     }
 }
