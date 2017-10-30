@@ -2,7 +2,7 @@ package network.pluto.alfred.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import network.pluto.alfred.transactions.TransactionUtil;
+import network.pluto.alfred.transactions.JsonUtil;
 import network.pluto.alfred.transactions.TxRequest;
 import network.pluto.bibliotheca.enums.TransactionStatus;
 import network.pluto.bibliotheca.models.Member;
@@ -32,9 +32,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void sendTransaction(Member member, TxRequest txRequest) {
+    public void sendTransaction(Member member, TxRequest<?> txRequest) {
         try {
-            String jsonStr = TransactionUtil.getJSONString(txRequest);
+            String jsonStr = JsonUtil.toJson(txRequest);
             this.jmsTemplate.convertAndSend(this.txQueueName, jsonStr);
         } catch (JsonProcessingException e) {
             log.error(e.getLocalizedMessage());

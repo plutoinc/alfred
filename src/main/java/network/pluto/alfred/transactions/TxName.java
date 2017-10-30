@@ -1,5 +1,5 @@
 package network.pluto.alfred.transactions;
 
-public enum PlutoTxName {
+public enum TxName {
     CREATE_WALLET
 }

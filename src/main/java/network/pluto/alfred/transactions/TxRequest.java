@@ -1,21 +1,50 @@
 package network.pluto.alfred.transactions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import network.pluto.bibliotheca.models.Transaction;
 
-import java.io.IOException;
+import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@Data
-public class TxRequest {
-    private PlutoTxName txName;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+@ToString(exclude = "transaction")
+@EqualsAndHashCode
+public class TxRequest<T> {
 
-    public TxRequest(PlutoTxName txName) {
-        this.txName = txName;
+    // metadata
+    private long memberId;
+    private TxName txName;
+    private LocalDateTime createdAt;
+
+    // transaction data
+    private T data;
+
+    @JsonIgnore
+    private Transaction transaction;
+
+    public static <T> TxRequest<T> create(long memberId, TxName txName, T data) {
+        TxRequest<T> txRequest = new TxRequest<>();
+        txRequest.memberId = memberId;
+        txRequest.txName = txName;
+        txRequest.createdAt = LocalDateTime.now();
+        txRequest.data = data;
+        return txRequest;
     }
 
-    public static TxRequest fromJson(String jsonStr) throws IOException {
-        return new ObjectMapper().readValue(jsonStr, TxRequest.class);
+    public <S> TxRequest<S> convert(Class<S> dataClass) {
+        TxRequest<S> txRequest = new TxRequest<>();
+        txRequest.memberId = this.memberId;
+        txRequest.txName = this.txName;
+        txRequest.createdAt = this.createdAt;
+
+        // convert data
+        txRequest.data = JsonUtil.convert(this.data, dataClass);
+
+        return txRequest;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
     }
 }

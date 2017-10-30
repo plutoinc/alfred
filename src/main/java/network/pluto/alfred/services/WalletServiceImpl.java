@@ -1,6 +1,8 @@
 package network.pluto.alfred.services;
 
-import network.pluto.alfred.transactions.PlutoCreateWalletTxRequest;
+import network.pluto.alfred.transactions.CreateWalletTransactionData;
+import network.pluto.alfred.transactions.TxName;
+import network.pluto.alfred.transactions.TxRequest;
 import network.pluto.bibliotheca.enums.WalletStatus;
 import network.pluto.bibliotheca.models.Member;
 import network.pluto.bibliotheca.models.Wallet;
@@ -30,8 +32,11 @@ public class WalletServiceImpl implements WalletService {
         wallet.setWalletStatus(WalletStatus.REQUEST_SENT);
         wallet = this.walletRepository.save(wallet);
 
-        PlutoCreateWalletTxRequest plutoCreateWalletTxRequest = new PlutoCreateWalletTxRequest(member.getMemberId(), wallet.getWalletId());
-        this.transactionService.sendTransaction(member, plutoCreateWalletTxRequest);
+        CreateWalletTransactionData data = new CreateWalletTransactionData();
+        data.setWalletId(wallet.getWalletId());
+
+        TxRequest<CreateWalletTransactionData> request = TxRequest.create(member.getMemberId(), TxName.CREATE_WALLET, data);
+        this.transactionService.sendTransaction(member, request);
     }
 
     @Transactional

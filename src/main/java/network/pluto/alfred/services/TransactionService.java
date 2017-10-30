@@ -7,7 +7,7 @@ import network.pluto.bibliotheca.models.Member;
 import network.pluto.bibliotheca.models.Transaction;
 
 public interface TransactionService {
-    void sendTransaction(Member member, TxRequest txRequest);
+    void sendTransaction(Member member, TxRequest<?> txRequest);
     void updateTransactionStatus(long txId, TransactionStatus transactionStatus);
     Transaction getTransaction(long transactionId);
     Transaction saveTransaction(Transaction transaction);
