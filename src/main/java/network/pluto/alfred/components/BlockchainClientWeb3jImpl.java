@@ -51,6 +51,8 @@ public class BlockchainClientWeb3jImpl implements BlockchainClient {
 
         WalletFile walletFile = JsonUtil.getMapper().readValue(inputStream, WalletFile.class);
         this.credentials = Credentials.create(Wallet.decrypt(plutoWalletPassphrase, walletFile));
+
+        inputStream.close();
     }
 
     @PostConstruct
