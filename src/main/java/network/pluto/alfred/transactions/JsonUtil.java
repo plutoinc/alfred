@@ -22,6 +22,10 @@ public class JsonUtil {
         MAPPER = mapper;
     }
 
+    public static ObjectMapper getMapper() {
+        return MAPPER;
+    }
+
     public static String toJson(Object object) throws JsonProcessingException {
         return MAPPER.writeValueAsString(object);
     }

@@ -2,6 +2,7 @@ package network.pluto.alfred.components;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import network.pluto.alfred.transactions.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -9,15 +10,16 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
+import org.web3j.crypto.Wallet;
+import org.web3j.crypto.WalletFile;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import rx.Subscription;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -45,9 +47,10 @@ public class BlockchainClientWeb3jImpl implements BlockchainClient {
         this.web3j = Web3j.build(new HttpService(ethClientUrl));
 
         Resource rootWalletResource = resourceLoader.getResource(plutoWalletFilepath);
-        File rootWalletFile = rootWalletResource.getFile();
+        InputStream inputStream = rootWalletResource.getInputStream();
 
-        this.credentials = WalletUtils.loadCredentials(plutoWalletPassphrase, rootWalletFile);
+        WalletFile walletFile = JsonUtil.getMapper().readValue(inputStream, WalletFile.class);
+        this.credentials = Credentials.create(Wallet.decrypt(plutoWalletPassphrase, walletFile));
     }
 
     @PostConstruct
