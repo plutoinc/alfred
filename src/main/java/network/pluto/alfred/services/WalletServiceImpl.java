@@ -33,16 +33,16 @@ public class WalletServiceImpl implements WalletService {
         wallet = this.walletRepository.save(wallet);
 
         CreateWalletTransactionData data = new CreateWalletTransactionData();
-        data.setWalletId(wallet.getWalletId());
+        data.setWalletId(wallet.getId());
 
-        TxRequest<CreateWalletTransactionData> request = TxRequest.create(member.getMemberId(), TxName.CREATE_WALLET, data);
+        TxRequest<CreateWalletTransactionData> request = TxRequest.create(member.getId(), TxName.CREATE_WALLET, data);
         this.transactionService.sendTransaction(member, request);
     }
 
     @Transactional
     @Override
     public Wallet registerAddress(long memberId, String address) {
-        Wallet wallet = this.walletRepository.findByMember_MemberId(memberId);
+        Wallet wallet = this.walletRepository.findByMember_Id(memberId);
         if (wallet == null) {
             return null;
         }
