@@ -41,11 +41,11 @@ public class WalletControllerTest {
     @Test
     public void testCreateWallet_NormalWalletCreation_ShouldReturnNormalResult() throws Exception {
         Member member = new Member();
-        member.setMemberId(1L);
+        member.setId(1L);
         member.setPassword("asdf");
 
         Wallet result = new Wallet();
-        result.setWalletId(1L);
+        result.setId(1L);
         result.setAddress("mynewwalletaddr");
 
         given(this.memberService.getMemberById(anyLong())).willReturn(member);
@@ -62,7 +62,7 @@ public class WalletControllerTest {
     @Test
     public void testCreateWallet_InvalidJsonRequestBody_ShouldReturnError() throws Exception {
         Member memberWithoutPassword = new Member();
-        memberWithoutPassword.setMemberId(1L);
+        memberWithoutPassword.setId(1L);
 
         given(this.memberService.getMemberById(anyLong())).willReturn(null);
 
